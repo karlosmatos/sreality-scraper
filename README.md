@@ -28,7 +28,7 @@ The spider will get sreality data and store them in the PostgreSQL database.
 
 ## Contributing
 
-Contributions are welcome. Please follow the standard fork and pull request workflow. Ensure your code adheres to the project's coding standards and include tests where applicable.
+Contributions are welcome. Please follow the standard fork and pull request workflow.
 
 ## License
 
@@ -36,4 +36,4 @@ This project is distributed under the MIT License. See the `LICENSE` file for mo
 
 ## Contact
 
-For any queries or further information, please contact the project maintainer at [insert contact information here].
+For any queries or further information, please contact the project maintainer at [me@karelmaly.com].
