@@ -19,16 +19,25 @@ NEWSPIDER_MODULE = "sreality.spiders"
 # Obey robots.txt rules
 ROBOTSTXT_OBEY = False
 
-# Configure maximum concurrent requests performed by Scrapy (default: 16)
-#CONCURRENT_REQUESTS = 32
+# ============================================
+# RETRY CONFIGURATION (Critical for data completeness)
+# ============================================
+RETRY_ENABLED = True
+RETRY_TIMES = 5
+RETRY_HTTP_CODES = [500, 502, 503, 504, 408, 429, 520, 521, 522, 523, 524]
+RETRY_PRIORITY_ADJUST = -1
 
-# Configure a delay for requests for the same website (default: 0)
-# See https://docs.scrapy.org/en/latest/topics/settings.html#download-delay
-# See also autothrottle settings and docs
-#DOWNLOAD_DELAY = 3
-# The download delay setting will honor only one of:
-#CONCURRENT_REQUESTS_PER_DOMAIN = 16
-#CONCURRENT_REQUESTS_PER_IP = 16
+# ============================================
+# TIMEOUT CONFIGURATION
+# ============================================
+DOWNLOAD_TIMEOUT = 30
+
+# ============================================
+# RATE LIMITING (Polite scraping)
+# ============================================
+DOWNLOAD_DELAY = 0.25
+CONCURRENT_REQUESTS = 8
+CONCURRENT_REQUESTS_PER_DOMAIN = 8
 
 # Disable cookies (enabled by default)
 #COOKIES_ENABLED = False
@@ -73,22 +82,29 @@ DEFAULT_REQUEST_HEADERS = {
 
 # Configure item pipelines
 # See https://docs.scrapy.org/en/latest/topics/item-pipeline.html
+# Pipeline order: Validate -> Dedupe -> Count -> Export
+# Available pipelines:
+#   - ValidationPipeline: Validates required fields exist
+#   - DeduplicationPipeline: Removes duplicate items by hash_id
+#   - CountVerificationPipeline: Verifies all records were captured
+#   - CSVPipeline: Export to CSV file (default: data/sreality_<timestamp>.csv)
+#   - MongoDBPipeline: Store in MongoDB (requires MONGO_URI in .env)
+#   - PostgreSQLPipeline: Store in PostgreSQL (requires POSTGRES_* in .env)
 ITEM_PIPELINES = {
-    "sreality.pipelines.SrealityPipeline": 300,
+    "sreality.pipelines.ValidationPipeline": 100,
+    "sreality.pipelines.DeduplicationPipeline": 200,
+    "sreality.pipelines.CountVerificationPipeline": 300,
+    "sreality.pipelines.CSVPipeline": 400,
 }
 
-# Enable and configure the AutoThrottle extension (disabled by default)
-# See https://docs.scrapy.org/en/latest/topics/autothrottle.html
-#AUTOTHROTTLE_ENABLED = True
-# The initial download delay
-#AUTOTHROTTLE_START_DELAY = 5
-# The maximum download delay to be set in case of high latencies
-#AUTOTHROTTLE_MAX_DELAY = 60
-# The average number of requests Scrapy should be sending in parallel to
-# each remote server
-#AUTOTHROTTLE_TARGET_CONCURRENCY = 1.0
-# Enable showing throttling stats for every response received:
-#AUTOTHROTTLE_DEBUG = False
+# ============================================
+# AUTO-THROTTLE (Adaptive rate limiting)
+# ============================================
+AUTOTHROTTLE_ENABLED = True
+AUTOTHROTTLE_START_DELAY = 0.5
+AUTOTHROTTLE_MAX_DELAY = 5
+AUTOTHROTTLE_TARGET_CONCURRENCY = 4.0
+AUTOTHROTTLE_DEBUG = False
 
 # Enable and configure HTTP caching (disabled by default)
 # See https://docs.scrapy.org/en/latest/topics/downloader-middleware.html#httpcache-middleware-settings
@@ -97,6 +113,14 @@ ITEM_PIPELINES = {
 #HTTPCACHE_DIR = "httpcache"
 #HTTPCACHE_IGNORE_HTTP_CODES = []
 #HTTPCACHE_STORAGE = "scrapy.extensions.httpcache.FilesystemCacheStorage"
+
+# ============================================
+# LOGGING CONFIGURATION
+# ============================================
+LOG_LEVEL = 'INFO'
+LOG_FORMAT = '%(asctime)s [%(name)s] %(levelname)s: %(message)s'
+LOG_DATEFORMAT = '%Y-%m-%d %H:%M:%S'
+STATS_DUMP = True
 
 # Set settings whose default value is deprecated to a future-proof value
 REQUEST_FINGERPRINTER_IMPLEMENTATION = "2.7"
