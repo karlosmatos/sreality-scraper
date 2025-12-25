@@ -12,15 +12,29 @@ class SrealitySpider(scrapy.Spider):
 
     # Category filters to bypass the ~60 page API limit
     # Each category has fewer results, allowing full pagination
+    # category_main_cb: 1=Byty, 2=Domy, 3=Pozemky, 4=Komerční, 5=Ostatní
+    # category_type_cb: 1=Prodej, 2=Pronájem, 3=Dražba
     CATEGORIES = [
+        # Byty (Flats)
         {"name": "Byty - Prodej", "category_main_cb": 1, "category_type_cb": 1},
         {"name": "Byty - Pronájem", "category_main_cb": 1, "category_type_cb": 2},
+        {"name": "Byty - Dražba", "category_main_cb": 1, "category_type_cb": 3},
+        # Domy (Houses)
         {"name": "Domy - Prodej", "category_main_cb": 2, "category_type_cb": 1},
         {"name": "Domy - Pronájem", "category_main_cb": 2, "category_type_cb": 2},
+        {"name": "Domy - Dražba", "category_main_cb": 2, "category_type_cb": 3},
+        # Pozemky (Land/Parcels)
         {"name": "Pozemky - Prodej", "category_main_cb": 3, "category_type_cb": 1},
         {"name": "Pozemky - Pronájem", "category_main_cb": 3, "category_type_cb": 2},
+        {"name": "Pozemky - Dražba", "category_main_cb": 3, "category_type_cb": 3},
+        # Komerční (Commercial)
         {"name": "Komerční - Prodej", "category_main_cb": 4, "category_type_cb": 1},
         {"name": "Komerční - Pronájem", "category_main_cb": 4, "category_type_cb": 2},
+        {"name": "Komerční - Dražba", "category_main_cb": 4, "category_type_cb": 3},
+        # Ostatní (Other - garages, storage, etc.)
+        {"name": "Ostatní - Prodej", "category_main_cb": 5, "category_type_cb": 1},
+        {"name": "Ostatní - Pronájem", "category_main_cb": 5, "category_type_cb": 2},
+        {"name": "Ostatní - Dražba", "category_main_cb": 5, "category_type_cb": 3},
     ]
 
     custom_settings = {
